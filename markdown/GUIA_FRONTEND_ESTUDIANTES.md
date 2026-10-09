@@ -118,17 +118,17 @@ No es necesario crear un nuevo cliente Axios, un nuevo hook de autenticación ni
 
 ## 4. Qué hace cada zona importante
 
-| Ubicación | Responsabilidad | Cómo aprovecharla |
-| --- | --- | --- |
-| `src/routes/index.jsx` | Declara las rutas y aplica los wrappers de autenticación/rol | Agrega aquí el import y la ruta de tareas |
-| `src/components/layout/Header.jsx` | Menú principal | Agrega un enlace a `/tasks` para usuarios autenticados |
-| `src/components/layout/ProtectedRoute.jsx` | Espera la sesión, requiere login y opcionalmente rol admin | Envuelve `/tasks` con `<ProtectedRoute>` sin `requireAdmin` |
-| `src/hooks/useAuth.jsx` | Contexto de sesión, usuario, login/logout y estado de autenticación | No dupliques la lógica de sesión en la página |
-| `src/services/api.js` | Base URL, encabezados, bearer token y refresh automático | Importa su `apiClient` en el service nuevo |
-| `src/services/userService.js` | Ejemplo de funciones API separadas de la UI | Sigue el patrón de métodos que retornan `response.data` |
-| `src/components/common/` | Input, Button, Card, Alert y Modal reutilizables | Prefiérelos a recrear controles equivalentes |
-| `src/index.css` | Reset y estilos base globales | Usa el CSS Module para los estilos particulares de tareas |
-| `.env.development` | URL local del backend | Cambia el valor solo si el backend se ejecuta en otro origen |
+| Ubicación                                  | Responsabilidad                                                     | Cómo aprovecharla                                            |
+| ------------------------------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `src/routes/index.jsx`                     | Declara las rutas y aplica los wrappers de autenticación/rol        | Agrega aquí el import y la ruta de tareas                    |
+| `src/components/layout/Header.jsx`         | Menú principal                                                      | Agrega un enlace a `/tasks` para usuarios autenticados       |
+| `src/components/layout/ProtectedRoute.jsx` | Espera la sesión, requiere login y opcionalmente rol admin          | Envuelve `/tasks` con `<ProtectedRoute>` sin `requireAdmin`  |
+| `src/hooks/useAuth.jsx`                    | Contexto de sesión, usuario, login/logout y estado de autenticación | No dupliques la lógica de sesión en la página                |
+| `src/services/api.js`                      | Base URL, encabezados, bearer token y refresh automático            | Importa su `apiClient` en el service nuevo                   |
+| `src/services/userService.js`              | Ejemplo de funciones API separadas de la UI                         | Sigue el patrón de métodos que retornan `response.data`      |
+| `src/components/common/`                   | Input, Button, Card, Alert y Modal reutilizables                    | Prefiérelos a recrear controles equivalentes                 |
+| `src/index.css`                            | Reset y estilos base globales                                       | Usa el CSS Module para los estilos particulares de tareas    |
+| `.env.development`                         | URL local del backend                                               | Cambia el valor solo si el backend se ejecuta en otro origen |
 
 ### Componentes comunes disponibles
 
@@ -149,7 +149,7 @@ En `src/routes/index.jsx`:
 1. Importa la nueva página:
 
    ```jsx
-   import Tasks from '../pages/Tasks/Tasks';
+   import Tasks from "../pages/Tasks/Tasks";
    ```
 
 2. Agrega una ruta protegida dentro de `<Routes>`:
@@ -186,36 +186,13 @@ Por eso, las llamadas del service deben usar rutas como `/tasks`, no `/api/tasks
 Separa las llamadas HTTP de los componentes. El patrón coincide con `src/services/userService.js`:
 
 ```js
-import apiClient from './api';
+import apiClient from "./api";
 
-export const getTasks = async (params = {}) => {
-  const response = await apiClient.get('/tasks', { params });
-  return response.data;
-};
-
-export const getTask = async (id) => {
-  const response = await apiClient.get(`/tasks/${id}`);
-  return response.data;
-};
-
-export const createTask = async (taskData) => {
-  const response = await apiClient.post('/tasks', taskData);
-  return response.data;
-};
-
-export const updateTask = async (id, taskData) => {
-  const response = await apiClient.put(`/tasks/${id}`, taskData);
-  return response.data;
-};
-
-export const completeTask = async (id) => {
-  const response = await apiClient.patch(`/tasks/${id}/complete`);
-  return response.data;
-};
-
-export const deleteTask = async (id) => {
-  await apiClient.delete(`/tasks/${id}`);
-};
+getTasks;
+getTask(id);
+createTask(taskData);
+updateTask(id, taskData);
+deleteTask(id);
 ```
 
 Estas funciones representan el contrato actual; no envíes `userId`. El backend deriva el usuario propietario de la sesión autenticada. Las respuestas `204 No Content` no tienen cuerpo; por eso `deleteTask` no debe intentar retornar `response.data`.
@@ -244,14 +221,14 @@ Usa [`FRONTEND_IMPLEMENTATION.md`](./FRONTEND_IMPLEMENTATION.md) para los detall
 
 ### Operaciones
 
-| Acción de UI | Método y ruta | Resultado |
-| --- | --- | --- |
-| Crear | `POST /api/tasks` | `201`, devuelve la tarea |
-| Listar/buscar/filtrar | `GET /api/tasks` | `200`, devuelve página |
-| Consultar una tarea | `GET /api/tasks/{id}` | `200`, devuelve tarea |
-| Editar | `PUT /api/tasks/{id}` | `200`, devuelve tarea actualizada |
-| Completar | `PATCH /api/tasks/{id}/complete` | `200`, establece `completed: true` |
-| Eliminar | `DELETE /api/tasks/{id}` | `204`, sin cuerpo |
+| Acción de UI          | Método y ruta                    | Resultado                          |
+| --------------------- | -------------------------------- | ---------------------------------- |
+| Crear                 | `POST /api/tasks`                | `201`, devuelve la tarea           |
+| Listar/buscar/filtrar | `GET /api/tasks`                 | `200`, devuelve página             |
+| Consultar una tarea   | `GET /api/tasks/{id}`            | `200`, devuelve tarea              |
+| Editar                | `PUT /api/tasks/{id}`            | `200`, devuelve tarea actualizada  |
+| Completar             | `PATCH /api/tasks/{id}/complete` | `200`, establece `completed: true` |
+| Eliminar              | `DELETE /api/tasks/{id}`         | `204`, sin cuerpo                  |
 
 El cliente Axios añade `/api` a la ruta relativa del service.
 
@@ -285,14 +262,14 @@ Incluye el valor actual de `completed`, incluso si solo cambias el título o la 
 
 `GET /tasks` acepta estos parámetros:
 
-| Parámetro | Uso | Reglas |
-| --- | --- | --- |
-| `page` | Página solicitada | Base cero; valor inicial `0` |
-| `size` | Elementos por página | De 1 a 100; predeterminado 20 |
-| `q` | Texto de búsqueda | Busca parcialmente en título y descripción; opcional |
-| `completed` | Filtrar estado | `true` o `false`; opcional |
-| `sort` | Campo de orden | `createdAt`, `title` o `completed` |
-| `dir` | Dirección | `asc` o `desc`; predeterminado `desc` |
+| Parámetro   | Uso                  | Reglas                                               |
+| ----------- | -------------------- | ---------------------------------------------------- |
+| `page`      | Página solicitada    | Base cero; valor inicial `0`                         |
+| `size`      | Elementos por página | De 1 a 100; predeterminado 20                        |
+| `q`         | Texto de búsqueda    | Busca parcialmente en título y descripción; opcional |
+| `completed` | Filtrar estado       | `true` o `false`; opcional                           |
+| `sort`      | Campo de orden       | `createdAt`, `title` o `completed`                   |
+| `dir`       | Dirección            | `asc` o `desc`; predeterminado `desc`                |
 
 La respuesta es un objeto paginado, no un arreglo:
 
@@ -314,11 +291,11 @@ Al enviar `q`, utiliza el parámetro de Axios (`{ params }`) para que espacios y
 
 Valida antes de hacer la solicitud para dar feedback inmediato; el backend sigue siendo la autoridad final.
 
-| Campo | Regla |
-| --- | --- |
-| `title` | Obligatorio, no vacío, mínimo 3 y máximo 100 caracteres |
-| `description` | Opcional; máximo 500 caracteres |
-| `completed` | Booleano; debe enviarse siempre al actualizar |
+| Campo         | Regla                                                   |
+| ------------- | ------------------------------------------------------- |
+| `title`       | Obligatorio, no vacío, mínimo 3 y máximo 100 caracteres |
+| `description` | Opcional; máximo 500 caracteres                         |
+| `completed`   | Booleano; debe enviarse siempre al actualizar           |
 
 Al presentar un error del backend, puede haber varios mensajes en `error.response.data.details`. No dependas de que siempre exista un mensaje ni de asociar cada texto a un campo; muestra un mensaje general alternativo cuando la respuesta no tenga detalles legibles.
 
@@ -349,7 +326,7 @@ Mantén las operaciones HTTP en el service y la interacción/estado visual en la
 En `Tasks.jsx`, importa el módulo local:
 
 ```jsx
-import styles from './Tasks.module.css';
+import styles from "./Tasks.module.css";
 ```
 
 Aplica clases mediante `styles.nombreDeClase`:
@@ -395,7 +372,3 @@ Antes de dar por terminada la implementación:
 - [ ] La interfaz funciona en escritorio y móvil.
 - [ ] `npm run lint` termina correctamente.
 - [ ] `npm run build` termina correctamente.
-
-## 14. Estimación de trabajo
-
-Para un estudiante con conocimiento intermedio de React, una versión básica de service, página y estilos puede tomar aproximadamente 4–6 horas. Una versión completa con búsqueda, filtros, paginación, validaciones, carga/error, confirmación de borrado y diseño adaptable suele requerir 8–12 horas, sin contar problemas externos del backend o del entorno.

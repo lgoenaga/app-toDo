@@ -64,13 +64,13 @@ Implementa aquí las funciones que comunican la aplicación con los endpoints de
 
 Funciones esperadas:
 
-| Función | Petición |
-| --- | --- |
-| `getTasks()` | `GET /tasks` |
-| `getTask(id)` | `GET /tasks/{id}`; opcional si la edición usa la tarea que ya está cargada |
-| `createTask(taskData)` | `POST /tasks` |
-| `updateTask(id, taskData)` | `PUT /tasks/{id}` |
-| `deleteTask(id)` | `DELETE /tasks/{id}` |
+| Función                    | Petición                                                                   |
+| -------------------------- | -------------------------------------------------------------------------- |
+| `getTasks()`               | `GET /tasks`                                                               |
+| `getTask(id)`              | `GET /tasks/{id}`; opcional si la edición usa la tarea que ya está cargada |
+| `createTask(taskData)`     | `POST /tasks`                                                              |
+| `updateTask(id, taskData)` | `PUT /tasks/{id}`                                                          |
+| `deleteTask(id)`           | `DELETE /tasks/{id}`                                                       |
 
 Importa el cliente Axios existente desde `./api`. No crees una instancia Axios nueva ni agregues `/api` a estas rutas: el cliente compartido ya tiene `/api` como prefijo.
 
@@ -78,19 +78,19 @@ Para ajustarse al patrón de los otros services, las funciones pueden devolver `
 
 ## 5. Archivos existentes que debe reutilizar
 
-| Archivo o carpeta | Uso en el taller |
-| --- | --- |
-| `src/services/api.js` | Cliente Axios único, base URL, token de autenticación y renovación de sesión |
-| `src/services/userService.js` | Ejemplo de estructura y estilo para un service |
-| `src/routes/index.jsx` | Registrar `/tasks` dentro de una ruta protegida |
-| `src/components/layout/Header.jsx` | Agregar el enlace de navegación a la página |
-| `src/components/layout/ProtectedRoute.jsx` | Proteger la página para usuarios autenticados |
-| `src/components/common/Button.jsx` | Acciones de crear, guardar, cancelar y eliminar |
-| `src/components/common/Input.jsx` | Campos del formulario |
-| `src/components/common/Card.jsx` | Contenedor visual reutilizable |
-| `src/components/common/Alert.jsx` | Mensajes de éxito o error |
-| `src/components/common/Modal.jsx` | Opcional: formulario de crear/editar o confirmación |
-| `src/index.css` | Estilos globales; no reemplaza los estilos propios del módulo |
+| Archivo o carpeta                          | Uso en el taller                                                             |
+| ------------------------------------------ | ---------------------------------------------------------------------------- |
+| `src/services/api.js`                      | Cliente Axios único, base URL, token de autenticación y renovación de sesión |
+| `src/services/userService.js`              | Ejemplo de estructura y estilo para un service                               |
+| `src/routes/index.jsx`                     | Registrar `/tasks` dentro de una ruta protegida                              |
+| `src/components/layout/Header.jsx`         | Agregar el enlace de navegación a la página                                  |
+| `src/components/layout/ProtectedRoute.jsx` | Proteger la página para usuarios autenticados                                |
+| `src/components/common/Button.jsx`         | Acciones de crear, guardar, cancelar y eliminar                              |
+| `src/components/common/Input.jsx`          | Campos del formulario                                                        |
+| `src/components/common/Card.jsx`           | Contenedor visual reutilizable                                               |
+| `src/components/common/Alert.jsx`          | Mensajes de éxito o error                                                    |
+| `src/components/common/Modal.jsx`          | Opcional: formulario de crear/editar o confirmación                          |
+| `src/index.css`                            | Estilos globales; no reemplaza los estilos propios del módulo                |
 
 La página debe manejar su estado local con React. No dupliques el cliente HTTP, la autenticación ni el estado de sesión.
 
@@ -199,10 +199,10 @@ El backend responde `204 No Content`. Después de eliminar, actualiza la lista l
 
 Valida antes de enviar la solicitud y presenta el error cerca del formulario cuando sea posible:
 
-| Campo | Regla |
-| --- | --- |
-| `title` | Obligatorio, no puede quedar vacío, entre 3 y 100 caracteres |
-| `description` | Opcional, máximo 500 caracteres |
+| Campo         | Regla                                                        |
+| ------------- | ------------------------------------------------------------ |
+| `title`       | Obligatorio, no puede quedar vacío, entre 3 y 100 caracteres |
+| `description` | Opcional, máximo 500 caracteres                              |
 
 No reemplaces la validación del backend: si el servidor rechaza una solicitud, informa al usuario y permite corregirla.
 
@@ -240,7 +240,7 @@ En `src/components/layout/Header.jsx`, agrega un enlace a `/tasks` en la navegac
 En `Tasks.jsx`, importa el módulo local:
 
 ```jsx
-import styles from './Tasks.module.css';
+import styles from "./Tasks.module.css";
 ```
 
 Usa clases del módulo, por ejemplo `styles.container` y `styles.title`. Coloca los estilos particulares de esta página en `Tasks.module.css`; evita agregar reglas específicas de tareas a `src/index.css`.

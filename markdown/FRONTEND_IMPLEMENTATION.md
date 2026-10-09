@@ -19,15 +19,15 @@ Este documento describe el contrato disponible en el backend `todo-app` para que
 
 ## 1. Resumen de integración
 
-| Elemento | Valor |
-| --- | --- |
-| URL local del backend | `http://localhost:8080` |
-| Prefijo REST | `/api` |
-| Formato | JSON (`Content-Type: application/json`) |
-| Autenticación | JWT en `Authorization: Bearer <token>` |
-| Origen CORS configurado localmente | `http://localhost:5173` |
-| Swagger UI | `http://localhost:8080/swagger-ui.html` |
-| OpenAPI | `http://localhost:8080/api-docs` |
+| Elemento                           | Valor                                   |
+| ---------------------------------- | --------------------------------------- |
+| URL local del backend              | `http://localhost:8080`                 |
+| Prefijo REST                       | `/api`                                  |
+| Formato                            | JSON (`Content-Type: application/json`) |
+| Autenticación                      | JWT en `Authorization: Bearer <token>`  |
+| Origen CORS configurado localmente | `http://localhost:5173`                 |
+| Swagger UI                         | `http://localhost:8080/swagger-ui.html` |
+| OpenAPI                            | `http://localhost:8080/api-docs`        |
 
 Configurar la URL del backend mediante una variable de entorno del frontend, por ejemplo `API_BASE_URL=http://localhost:8080`; no concatenar rutas de API por toda la aplicación. En proyectos Vite puede exponerse mediante una variable `VITE_API_BASE_URL`.
 
@@ -37,13 +37,13 @@ El backend permite un único origen CORS, configurable con `CORS_ALLOWED_ORIGIN`
 
 El backend ofrece access JWT de 1 hora y refresh token opaco con vigencia renovable de 24 horas. Login, registro y refresh responden con `token` (access JWT), `type: "Bearer"`, `refreshToken`, `expiresInSeconds`, `id`, `username`, `email` y `role`. Los tokens se intercambian en JSON, sin cookies. `expiresInSeconds` refleja la configuración efectiva del access token; localmente es `3600`.
 
-| Método | Ruta | Solicitud | Resultado |
-| --- | --- | --- | --- |
-| `GET` | `/api/auth/me` | Access JWT | Perfil `id`, `username`, `email`, `role` |
-| `POST` | `/api/auth/refresh` | `{ "refreshToken": "..." }` | Nuevo access JWT y refresh token rotado |
-| `POST` | `/api/auth/logout` | `{ "refreshToken": "..." }` | `204`; revoca la sesión actual de inmediato |
-| `PUT` | `/api/account/password` | `{ "currentPassword": "...", "newPassword": "..." }` | `204`; revoca todas las sesiones propias |
-| `PUT` | `/api/users/{id}/password` | `{ "newPassword": "..." }`, ADMIN | `204`; fija contraseña final y revoca las sesiones del usuario |
+| Método | Ruta                       | Solicitud                                            | Resultado                                                      |
+| ------ | -------------------------- | ---------------------------------------------------- | -------------------------------------------------------------- |
+| `GET`  | `/api/auth/me`             | Access JWT                                           | Perfil `id`, `username`, `email`, `role`                       |
+| `POST` | `/api/auth/refresh`        | `{ "refreshToken": "..." }`                          | Nuevo access JWT y refresh token rotado                        |
+| `POST` | `/api/auth/logout`         | `{ "refreshToken": "..." }`                          | `204`; revoca la sesión actual de inmediato                    |
+| `PUT`  | `/api/account/password`    | `{ "currentPassword": "...", "newPassword": "..." }` | `204`; revoca todas las sesiones propias                       |
+| `PUT`  | `/api/users/{id}/password` | `{ "newPassword": "..." }`, ADMIN                    | `204`; fija contraseña final y revoca las sesiones del usuario |
 
 Guarda el refresh token en `sessionStorage`: sobrevive a recargas y desaparece al cerrar la pestaña, pero es accesible a JavaScript y requiere mitigaciones XSS. No registrar tokens en logs/telemetría. Cada refresh rota el token; la reutilización de uno anterior revoca toda la sesión. Implementa refresh single-flight para que peticiones concurrentes compartan una única renovación. El access JWT lleva un identificador de sesión y el backend verifica su estado en cada petición protegida.
 
@@ -239,14 +239,14 @@ Para cerrar sesión, llama `POST /api/auth/logout` con el refresh token actual; 
 
 Todas las rutas requieren access JWT. La API devuelve únicamente las tareas del usuario autenticado y trata una tarea ajena como no encontrada (`404`). El listado acepta `page` (default 0), `size` (default 20; rango 1–100), `q` (búsqueda parcial insensible a mayúsculas en título y descripción), `completed=true|false`, `sort=createdAt|title|completed` (default `createdAt`) y `dir=asc|desc` (default `desc`). `q` se recorta en los extremos; si queda vacío, no filtra. Devuelve `PageResponse<Task>`; propietario y filtros se aplican en la consulta antes de paginar.
 
-| Método | Ruta | Acceso | Éxito |
-| --- | --- | --- | --- |
-| `POST` | `/api/tasks` | Usuario autenticado | `201 Created`, tarea |
-| `GET` | `/api/tasks` | Usuario autenticado | `200 OK`, `PageResponse<Task>` |
-| `GET` | `/api/tasks/{id}` | Usuario autenticado | `200 OK`, tarea |
-| `PUT` | `/api/tasks/{id}` | Usuario autenticado | `200 OK`, tarea actualizada |
-| `PATCH` | `/api/tasks/{id}/complete` | Usuario autenticado | `200 OK`, tarea completada |
-| `DELETE` | `/api/tasks/{id}` | Usuario autenticado | `204 No Content` |
+| Método   | Ruta                       | Acceso              | Éxito                          |
+| -------- | -------------------------- | ------------------- | ------------------------------ |
+| `POST`   | `/api/tasks`               | Usuario autenticado | `201 Created`, tarea           |
+| `GET`    | `/api/tasks`               | Usuario autenticado | `200 OK`, `PageResponse<Task>` |
+| `GET`    | `/api/tasks/{id}`          | Usuario autenticado | `200 OK`, tarea                |
+| `PUT`    | `/api/tasks/{id}`          | Usuario autenticado | `200 OK`, tarea actualizada    |
+| `PATCH`  | `/api/tasks/{id}/complete` | Usuario autenticado | `200 OK`, tarea completada     |
+| `DELETE` | `/api/tasks/{id}`          | Usuario autenticado | `204 No Content`               |
 
 Ejemplo para traer tareas incompletas que coincidan con “informe”, ordenadas por fecha reciente. Codificar `q` como query parameter (por ejemplo, mediante `URLSearchParams`) para manejar espacios y caracteres especiales:
 
@@ -296,14 +296,14 @@ El identificador de la ruta determina qué tarea se actualiza. `id` y `createdAt
 
 Todas las rutas requieren el rol `ADMIN`. Login/registro y `GET /api/auth/me` exponen el rol. El registro público asigna `USER`; el primer `ADMIN` se aprovisiona manualmente. Las respuestas de `/api/users` no incluyen contraseña ni rol.
 
-| Método | Ruta | Acceso | Éxito |
-| --- | --- | --- | --- |
-| `POST` | `/api/users` | `ADMIN` | `201 Created`, usuario |
-| `GET` | `/api/users` | `ADMIN` | `200 OK`, `PageResponse<User>` |
-| `GET` | `/api/users/{id}` | `ADMIN` | `200 OK`, usuario |
-| `PUT` | `/api/users/{id}` | `ADMIN` | `200 OK`, usuario actualizado |
-| `DELETE` | `/api/users/{id}` | `ADMIN` | `204 No Content` |
-| `PUT` | `/api/users/{id}/password` | `ADMIN` | `204 No Content`; fija contraseña y revoca sesiones |
+| Método   | Ruta                       | Acceso  | Éxito                                               |
+| -------- | -------------------------- | ------- | --------------------------------------------------- |
+| `POST`   | `/api/users`               | `ADMIN` | `201 Created`, usuario                              |
+| `GET`    | `/api/users`               | `ADMIN` | `200 OK`, `PageResponse<User>`                      |
+| `GET`    | `/api/users/{id}`          | `ADMIN` | `200 OK`, usuario                                   |
+| `PUT`    | `/api/users/{id}`          | `ADMIN` | `200 OK`, usuario actualizado                       |
+| `DELETE` | `/api/users/{id}`          | `ADMIN` | `204 No Content`                                    |
+| `PUT`    | `/api/users/{id}/password` | `ADMIN` | `204 No Content`; fija contraseña y revoca sesiones |
 
 El listado acepta `page`, `size`, `q` (búsqueda parcial insensible a mayúsculas en username/email), `sort=username|email` (default `username`) y `dir=asc|desc` (default `asc`), con el mismo envelope paginado. `q` se recorta; vacío significa sin búsqueda. Ejemplo:
 
@@ -319,15 +319,15 @@ Crear requiere `username`, `email` y `password`; responde con `User` sin iniciar
 
 Validar en el cliente para dar feedback inmediato, pero mantener el backend como autoridad final.
 
-| Campo | Restricción |
-| --- | --- |
-| `username` | Obligatorio, no vacío, de 3 a 50 caracteres |
-| `email` | Obligatorio, formato de correo válido, máximo 100 caracteres |
-| `password` | Obligatorio, mínimo 8 caracteres |
-| `usernameOrEmail` | Obligatorio, no vacío |
-| Título de tarea (`title`) | Obligatorio, no vacío, de 3 a 100 caracteres |
-| Descripción (`description`) | Opcional; máximo 500 caracteres |
-| Estado (`completed`) | Booleano; enviar siempre al actualizar. `null` es inválido; si se omite, el DTO lo inicializa como `false`. |
+| Campo                       | Restricción                                                                                                 |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `username`                  | Obligatorio, no vacío, de 3 a 50 caracteres                                                                 |
+| `email`                     | Obligatorio, formato de correo válido, máximo 100 caracteres                                                |
+| `password`                  | Obligatorio, mínimo 8 caracteres                                                                            |
+| `usernameOrEmail`           | Obligatorio, no vacío                                                                                       |
+| Título de tarea (`title`)   | Obligatorio, no vacío, de 3 a 100 caracteres                                                                |
+| Descripción (`description`) | Opcional; máximo 500 caracteres                                                                             |
+| Estado (`completed`)        | Booleano; enviar siempre al actualizar. `null` es inválido; si se omite, el DTO lo inicializa como `false`. |
 
 Los nombres de usuario y correos deben ser únicos. El backend también evita que el username de una cuenta coincida con el email de otra, y viceversa. Puede reportar un duplicado como `400` o `409`, así que el cliente debe mostrar el mensaje de servidor sin vincular el tratamiento exclusivamente a uno de esos códigos.
 
@@ -340,39 +340,37 @@ Los errores de aplicación manejados por el backend suelen tener esta forma:
   "timestamp": "2026-10-06T12:00:00",
   "status": 400,
   "error": "Error de validación",
-  "details": [
-    "El título es obligatorio"
-  ]
+  "details": ["El título es obligatorio"]
 }
 ```
 
 `details` es una lista de mensajes legibles y puede contener varios errores. No contiene nombres de campos ni códigos estables de validación; mostrar mensajes junto al campo solo cuando puedan asociarse de forma fiable y usar un mensaje general como fallback. No depender del texto exacto para la lógica.
 
-| Estado | Significado y respuesta del frontend |
-| --- | --- |
-| `400` | Solicitud inválida o validación; mostrar errores y permitir corregir. |
-| `401` | Login con credenciales inválidas, access JWT ausente/inválido/expirado o refresh inválido. En rutas de recursos, limpiar sesión si el access JWT es rechazado; excepciones: login, refresh y contraseña actual incorrecta en cambio propio (la sesión sigue vigente). |
-| `403` | Usuario autenticado sin rol requerido; mostrar acceso denegado, no repetir la misma solicitud. |
-| `404` | Recurso inexistente o tarea que no pertenece al usuario; informar que ya no está disponible y actualizar la vista si aplica. |
-| `409` | Conflicto con datos existentes o intento de borrar usuario con tareas; explicar la acción necesaria. |
-| `500` | Error inesperado; mostrar mensaje genérico y permitir reintentar según la operación. |
+| Estado | Significado y respuesta del frontend                                                                                                                                                                                                                                  |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `400`  | Solicitud inválida o validación; mostrar errores y permitir corregir.                                                                                                                                                                                                 |
+| `401`  | Login con credenciales inválidas, access JWT ausente/inválido/expirado o refresh inválido. En rutas de recursos, limpiar sesión si el access JWT es rechazado; excepciones: login, refresh y contraseña actual incorrecta en cambio propio (la sesión sigue vigente). |
+| `403`  | Usuario autenticado sin rol requerido; mostrar acceso denegado, no repetir la misma solicitud.                                                                                                                                                                        |
+| `404`  | Recurso inexistente o tarea que no pertenece al usuario; informar que ya no está disponible y actualizar la vista si aplica.                                                                                                                                          |
+| `409`  | Conflicto con datos existentes o intento de borrar usuario con tareas; explicar la acción necesaria.                                                                                                                                                                  |
+| `500`  | Error inesperado; mostrar mensaje genérico y permitir reintentar según la operación.                                                                                                                                                                                  |
 
 Casos específicos que afectan el tratamiento de errores:
 
-| Operación | Errores relevantes |
-| --- | --- |
-| Registro | `400` validación/identificador ya usado; `409` conflicto de persistencia |
-| Login | `400` cuerpo inválido; `401` credenciales incorrectas |
-| Refresh | `400` cuerpo ausente o refresh vacío; `401` token inválido, vencido, reutilizado o sesión revocada (respuesta sin cuerpo) |
-| Logout | `400` refresh vacío; si el cuerpo es válido, responde `204` aunque el token no identifique una sesión activa |
-| Listados | `400` formato de parámetro incorrecto, página negativa, tamaño fuera de `1..100`, sort o dirección inválidos |
-| Crear/actualizar tarea | `400` validación del cuerpo; `401` access JWT ausente o inválido |
-| Tareas por ID / eliminar | `400` ID con formato inválido; `404` si no existe o pertenece a otra cuenta |
-| Crear/actualizar usuario | `400` validación o identificador ya usado; `404` al actualizar ID inexistente; `401`/`403` sin autorización admin |
-| Eliminar usuario | `404` ID inexistente; `409` si tiene tareas; `401`/`403` sin autorización admin |
-| Rutas de administración | `401` sin access JWT; `403` usuario sin rol `ADMIN` |
-| Cambio propio de contraseña | `400` validación; `401` contraseña actual incorrecta (con cuerpo de error, la sesión sigue activa); `204` éxito |
-| Cambio de contraseña admin | `400` contraseña inválida; `403` sin `ADMIN`; `404` usuario no encontrado; `204` éxito |
+| Operación                   | Errores relevantes                                                                                                        |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Registro                    | `400` validación/identificador ya usado; `409` conflicto de persistencia                                                  |
+| Login                       | `400` cuerpo inválido; `401` credenciales incorrectas                                                                     |
+| Refresh                     | `400` cuerpo ausente o refresh vacío; `401` token inválido, vencido, reutilizado o sesión revocada (respuesta sin cuerpo) |
+| Logout                      | `400` refresh vacío; si el cuerpo es válido, responde `204` aunque el token no identifique una sesión activa              |
+| Listados                    | `400` formato de parámetro incorrecto, página negativa, tamaño fuera de `1..100`, sort o dirección inválidos              |
+| Crear/actualizar tarea      | `400` validación del cuerpo; `401` access JWT ausente o inválido                                                          |
+| Tareas por ID / eliminar    | `400` ID con formato inválido; `404` si no existe o pertenece a otra cuenta                                               |
+| Crear/actualizar usuario    | `400` validación o identificador ya usado; `404` al actualizar ID inexistente; `401`/`403` sin autorización admin         |
+| Eliminar usuario            | `404` ID inexistente; `409` si tiene tareas; `401`/`403` sin autorización admin                                           |
+| Rutas de administración     | `401` sin access JWT; `403` usuario sin rol `ADMIN`                                                                       |
+| Cambio propio de contraseña | `400` validación; `401` contraseña actual incorrecta (con cuerpo de error, la sesión sigue activa); `204` éxito           |
+| Cambio de contraseña admin  | `400` contraseña inválida; `403` sin `ADMIN`; `404` usuario no encontrado; `204` éxito                                    |
 
 Importante: los errores de validación y de negocio suelen incluir el objeto descrito, pero no todos los errores de seguridad tienen cuerpo JSON. La respuesta a un `401` por falta de autenticación o JWT inválido y algunos `403` pueden venir vacíos. El cliente debe tolerar cuerpo ausente, JSON no parseable o `details` ausente y usar el estado HTTP como fuente para la acción.
 
